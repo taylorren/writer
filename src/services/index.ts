@@ -1,31 +1,31 @@
 // Core service interfaces
 
-import { 
-  Project, 
-  Outline, 
-  Chapter, 
+import {
+  Project,
+  Outline,
+  Chapter,
   WritingStyle,
   OutlineSection,
-  LocalizationConfig 
+  LocalizationConfig
 } from '../models';
-import { 
+import {
   GenerationContext,
   CreationStep,
   StepResult,
   CreationState,
-  KeyInformation 
+  KeyInformation
 } from '../models/generation';
-import { 
-  ImageInput, 
-  ImageAnalysisResult, 
-  PlotRequirement 
+import {
+  ImageInput,
+  ImageAnalysisResult,
+  PlotRequirement
 } from '../models/multimodal';
-import { 
-  ValidationResult, 
+import {
+  ValidationResult,
   StyleValidationResult,
   CreationError,
   ErrorResponse,
-  RecoveryResult 
+  RecoveryResult
 } from '../models/errors';
 
 // Creation Flow Manager Interface
@@ -85,3 +85,8 @@ export interface ErrorHandler {
   handleError(error: CreationError): ErrorResponse;
   recoverFromError(error: CreationError): Promise<RecoveryResult>;
 }
+
+// Export concrete implementations
+export { CoreIdeaProcessor, CoreIdeaAnalysisResult, ExtractedElements } from './core-idea-processor';
+export { CoreIdeaParser, ParsedCoreIdea } from './core-idea-parser';
+export { CacheManager, MemoryCache, getDefaultCacheManager } from './cache';

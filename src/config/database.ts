@@ -314,11 +314,11 @@ export const getDefaultDatabaseConfig = (): DatabaseConfig => {
     const isTest = process.env.NODE_ENV === 'test';
     
     return {
-        host: process.env[isTest ? 'TEST_DB_HOST' : 'DB_HOST'] || 'localhost',
-        port: parseInt(process.env[isTest ? 'TEST_DB_PORT' : 'DB_PORT'] || '3306'),
-        user: process.env[isTest ? 'TEST_DB_USER' : 'DB_USER'] || 'root',
-        password: process.env[isTest ? 'TEST_DB_PASSWORD' : 'DB_PASSWORD'] || '',
-        database: process.env[isTest ? 'TEST_DB_NAME' : 'DB_NAME'] || (isTest ? 'writer_test' : 'writer'),
+        host: env[isTest ? 'TEST_DB_HOST' : 'DB_HOST'],
+        port: env[isTest ? 'TEST_DB_PORT' : 'DB_PORT'],
+        user: env[isTest ? 'TEST_DB_USER' : 'DB_USER'],
+        password: env[isTest ? 'TEST_DB_PASSWORD' : 'DB_PASSWORD'],
+        database: env[isTest ? 'TEST_DB_NAME' : 'DB_NAME'],
         connectionLimit: 10,
         reconnect: true
     };

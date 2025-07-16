@@ -1,11 +1,11 @@
 // Cache management system tests
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { 
-  MemoryCache, 
-  CacheManager, 
+import {
+  MemoryCache,
+  CacheManager,
   CacheKeyBuilder,
-  getDefaultCacheManager 
+  getDefaultCacheManager
 } from '../services/cache';
 
 describe('缓存管理系统测试', () => {
@@ -49,20 +49,20 @@ describe('缓存管理系统测试', () => {
 
     it('应该能够检查键是否存在', async () => {
       await cache.set('exists-key', 'value');
-      
+
       const exists = await cache.exists('exists-key');
       const notExists = await cache.exists('not-exists-key');
-      
+
       expect(exists).toBe(true);
       expect(notExists).toBe(false);
     });
 
     it('应该能够删除缓存项', async () => {
       await cache.set('delete-key', 'value');
-      
+
       const deleted = await cache.delete('delete-key');
       const value = await cache.get('delete-key');
-      
+
       expect(deleted).toBe(true);
       expect(value).toBeNull();
     });
@@ -70,13 +70,13 @@ describe('缓存管理系统测试', () => {
     it('应该能够清空所有缓存', async () => {
       await cache.set('key1', 'value1');
       await cache.set('key2', 'value2');
-      
+
       await cache.clear();
-      
+
       const value1 = await cache.get('key1');
       const value2 = await cache.get('key2');
       const size = await cache.size();
-      
+
       expect(value1).toBeNull();
       expect(value2).toBeNull();
       expect(size).toBe(0);
@@ -86,10 +86,10 @@ describe('缓存管理系统测试', () => {
       await cache.set('user:1', 'user1');
       await cache.set('user:2', 'user2');
       await cache.set('project:1', 'project1');
-      
+
       const allKeys = await cache.keys();
       const userKeys = await cache.keys('user:*');
-      
+
       expect(allKeys).toHaveLength(3);
       expect(userKeys).toHaveLength(2);
       expect(userKeys).toContain('user:1');
@@ -98,10 +98,10 @@ describe('缓存管理系统测试', () => {
 
     it('应该能够获取缓存大小', async () => {
       expect(await cache.size()).toBe(0);
-      
+
       await cache.set('key1', 'value1');
       expect(await cache.size()).toBe(1);
-      
+
       await cache.set('key2', 'value2');
       expect(await cache.size()).toBe(2);
     });
@@ -110,14 +110,14 @@ describe('缓存管理系统测试', () => {
   describe('缓存过期功能', () => {
     it('应该在TTL过期后自动删除缓存项', async () => {
       await cache.set('expire-key', 'value', 50); // 50ms TTL
-      
+
       // 立即获取应该成功
       let value = await cache.get('expire-key');
       expect(value).toBe('value');
-      
+
       // 等待过期
       await new Promise(resolve => setTimeout(resolve, 100));
-      
+
       // 过期后应该返回null
       value = await cache.get('expire-key');
       expect(value).toBeNull();
@@ -125,7 +125,7 @@ describe('缓存管理系统测试', () => {
 
     it('应该使用默认TTL', async () => {
       await cache.set('default-ttl-key', 'value');
-      
+
       // 立即获取应该成功
       const value = await cache.get('default-ttl-key');
       expect(value).toBe('value');
@@ -133,7 +133,7 @@ describe('缓存管理系统测试', () => {
 
     it('应该能够设置自定义TTL', async () => {
       await cache.set('custom-ttl-key', 'value', 2000); // 2 seconds
-      
+
       const value = await cache.get('custom-ttl-key');
       expect(value).toBe('value');
     });
@@ -147,12 +147,12 @@ describe('缓存管理系统测试', () => {
         // 添加小延迟确保访问时间不同
         await new Promise(resolve => setTimeout(resolve, 1));
       }
-      
+
       expect(await cache.size()).toBe(5);
-      
+
       // 添加第6个项目，应该驱逐最旧的
       await cache.set('key6', 'value6');
-      
+
       expect(await cache.size()).toBe(5);
       expect(await cache.get('key1')).toBeNull(); // 最旧的应该被驱逐
       expect(await cache.get('key6')).toBe('value6'); // 新的应该存在
@@ -162,27 +162,27 @@ describe('缓存管理系统测试', () => {
   describe('缓存统计信息', () => {
     it('应该正确跟踪命中和未命中', async () => {
       await cache.set('stats-key', 'value');
-      
+
       // 命中
       await cache.get('stats-key');
       await cache.get('stats-key');
-      
+
       // 未命中
       await cache.get('non-existent-key');
-      
+
       const stats = cache.getStats();
       expect(stats.hitCount).toBe(2);
       expect(stats.missCount).toBe(1);
-      expect(stats.hitRate).toBeCloseTo(2/3);
+      expect(stats.hitRate).toBeCloseTo(2 / 3);
     });
 
     it('应该能够重置统计信息', async () => {
       await cache.set('reset-key', 'value');
       await cache.get('reset-key');
       await cache.get('non-existent-key');
-      
+
       cache.resetStats();
-      
+
       const stats = cache.getStats();
       expect(stats.hitCount).toBe(0);
       expect(stats.missCount).toBe(0);
@@ -219,7 +219,7 @@ describe('缓存管理系统测试', () => {
 
       // 批量获取
       const results = await cacheManager.getMany(['batch1', 'batch2', 'batch3', 'not-exists']);
-      
+
       expect(results.get('batch1')).toBe('value1');
       expect(results.get('batch2')).toBe('value2');
       expect(results.get('batch3')).toBe('value3');
@@ -228,7 +228,7 @@ describe('缓存管理系统测试', () => {
       // 批量删除
       const deletedCount = await cacheManager.deleteMany(['batch1', 'batch2']);
       expect(deletedCount).toBe(2);
-      
+
       expect(await cacheManager.exists('batch1')).toBe(false);
       expect(await cacheManager.exists('batch2')).toBe(false);
       expect(await cacheManager.exists('batch3')).toBe(true);
@@ -243,7 +243,7 @@ describe('缓存管理系统测试', () => {
       ]);
 
       const deletedCount = await cacheManager.deleteByPattern('user:*');
-      
+
       expect(deletedCount).toBe(3);
       expect(await cacheManager.exists('user:1:profile')).toBe(false);
       expect(await cacheManager.exists('user:2:profile')).toBe(false);
@@ -259,7 +259,7 @@ describe('缓存管理系统测试', () => {
         .add(123)
         .add('profile')
         .build();
-      
+
       expect(key).toBe('user:123:profile');
     });
 
@@ -269,25 +269,25 @@ describe('缓存管理系统测试', () => {
         .add('user')
         .addHash(obj)
         .build();
-      
+
       expect(key).toMatch(/^user:[a-z0-9]+$/);
-      
+
       // 相同对象应该生成相同的哈希
       const key2 = CacheKeyBuilder.create()
         .add('user')
         .addHash(obj)
         .build();
-      
+
       expect(key).toBe(key2);
     });
 
     it('应该为不同对象生成不同的哈希', () => {
       const obj1 = { name: '测试1' };
       const obj2 = { name: '测试2' };
-      
+
       const key1 = CacheKeyBuilder.create().addHash(obj1).build();
       const key2 = CacheKeyBuilder.create().addHash(obj2).build();
-      
+
       expect(key1).not.toBe(key2);
     });
   });
@@ -296,24 +296,24 @@ describe('缓存管理系统测试', () => {
     it('应该返回单例实例', () => {
       const manager1 = getDefaultCacheManager();
       const manager2 = getDefaultCacheManager();
-      
+
       expect(manager1).toBe(manager2);
     });
 
     it('应该能够正常工作', async () => {
       const manager = getDefaultCacheManager();
-      
+
       await manager.setMany([
         { key: 'default:test1', value: 'value1' },
         { key: 'default:test2', value: 'value2' }
       ]);
-      
+
       const exists1 = await manager.exists('default:test1');
       const exists2 = await manager.exists('default:test2');
-      
+
       expect(exists1).toBe(true);
       expect(exists2).toBe(true);
-      
+
       // 清理
       await manager.deleteByPattern('default:*');
     });
@@ -328,10 +328,10 @@ describe('缓存管理系统测试', () => {
     it('应该优雅处理null/undefined值', async () => {
       await cache.set('null-key', null);
       await cache.set('undefined-key', undefined);
-      
+
       const nullValue = await cache.get('null-key');
       const undefinedValue = await cache.get('undefined-key');
-      
+
       expect(nullValue).toBeNull();
       expect(undefinedValue).toBeUndefined();
     });
