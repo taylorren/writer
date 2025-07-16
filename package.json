@@ -1,0 +1,22 @@
+{
+  "name": "novel-writing-assistant",
+  "version": "1.0.0",
+  "description": "AI-powered novel writing assistant",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node src/index.ts",
+    "test": "vitest --run",
+    "test:watch": "vitest"
+  },
+  "keywords": ["novel", "writing", "ai", "assistant"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "ts-node": "^10.9.0",
+    "vitest": "^1.0.0"
+  },
+  "dependencies": {}
+}
