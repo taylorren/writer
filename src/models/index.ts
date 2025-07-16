@@ -138,3 +138,9 @@ export interface LocalizationConfig {
   writingConventions: string[];
   characterNamingRules: string[];
 }
+
+// Export validation functions
+export * from './validation';
+
+// Export multimodal models
+export * from './multimodal';
